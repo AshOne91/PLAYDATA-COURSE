@@ -376,9 +376,211 @@ list(map(lambda filepath: filepath.split('.')[0], file_lists))
 myFun = lambda filepath: filepath.split('.')[0]
 print(myFun("abc.test"))
 ```
+람다가 적용되는 상황
+- 함수를 매개변수로 받는 몇몇 함수에서
+map, reduce, filter
+```python
+import random
+random_lists = random.sample9range9100), 20)
+print(f'original : [random_lists]')
+list(filter(lambda x : x > 50, random_lists))
+```
+```python
+from functools import reduce
+ reduce(lambda x,y : x+y, [1,2,3,4,5])
+```
+```python
+result_lists = [ [10, 20], [30, 50], [10, 20], [1, 2, 3]]
+print(f'리스트 1 : [ [1,2,3]]')
+print(f'리스트 2 : [ [10, 20, 30] ]')
+print(f'리스트 1 + 리스트 2 : [ [1, 2, 3] + [10, 20, 30] ]')
+```
+```python
+result = []
+for data in result_lists:
+  result += data
 
+print(result)
 
+reduce(lambda x,y : x+y, result_lists)
+```
+```python
+# 조건문중에. 단순한 if~else 구문은 한줄로 만들수있고
+# 한줄로 표현한다는거는 lambda식에 적용가능
+# 3항연산라고 표시하지만 파이썬에서는 그러한 단어는 없다.
+# x % 2 == 0 ? "짝수" : "홀수"
+x = True
+"참" if x == True else "거짓"
 
+# 정수의 집합중에 최대값 찾기  max 사용안하고 reduce
+import random
+numbers = random.sample(range(100),10)
+print(f'ogirinal : {numbers}')
+# 최대값 찾기
+reduce(lambda x,y : x if x > y else y, numbers)
+```
+```python
+# 리스트의 모든 요소가 짝수인지 확인
+sample_lists = random.sample(range(100), 2)
+print(f'original : {sample_lists}')
+# 1 for
+isEven = True
+for i in sample_lists:
+  if i % 2 != 0:  # 순환하면서 홀수가 발견되면
+    isEven = False
+    break
+print(f'1 : {isEven}')
+
+# 2. map 을 이용해서 각 값을 2나 나눈 나머지계산.... [0,0,0,1]
+# 총합이 0보다 크면
+print(f'2 : {sum(map(lambda x: x % 2, sample_lists)) == 0 }')
+
+# 3.홀수일때의 값만 추출해서.. 리스트의 개수가 0보다 크면.. 홀수
+print(f'3 : {len(list((filter(lambda x: x % 2 !=0 ,sample_lists)))) == 0}')
+
+# 4 ramda 두개의 각각에 대해서 짝수조건을 걸고 두의 and 결과
+print(f'4 : {reduce(lambda x,y : x % 2 == 0 and y % 2 == 0, sample_lists)}')
+```
+### `all()` and `any()` in Python  
+
+#### **1. `all(iterable)`**
+- Returns `True` if **all** elements in the iterable are truthy (not `False`, `0`, `None`, `''`, etc.).
+- Returns `False` if at least one element is falsy.
+
+**Example:**
+```python
+print(all([True, 1, "hello"]))  # True
+print(all([True, 0, "hello"]))  # False
+print(all([]))  # True (empty iterable returns True)
+```
+
+#### **2. `any(iterable)`**
+- Returns `True` if **at least one** element in the iterable is truthy.
+- Returns `False` if all elements are falsy.
+
+**Example:**
+```python
+print(any([False, 0, "hello"]))  # True
+print(any([False, 0, None]))  # False
+print(any([]))  # False (empty iterable returns False)
+```
+
+### **Use Cases**
+- **Checking if all inputs are valid**
+  ```python
+  values = [10, 20, 30, 0]
+  if all(values):
+      print("All values are non-zero")
+  else:
+      print("There is at least one zero")  # Output: "There is at least one zero"
+  ```
+- **Checking if any condition is met**
+  ```python
+  words = ["apple", "", "banana"]
+  if any(words):
+      print("At least one non-empty string exists")  # Output: "At least one non-empty string exists"
+  ```
+- **Filtering lists**
+  ```python
+  numbers = [3, 5, 7, 9]
+  print(all(n % 2 == 1 for n in numbers))  # True (all numbers are odd)
+  print(any(n > 8 for n in numbers))  # True (9 is greater than 8)
+  ```
+
+### **Key Differences**
+| Function | Returns `True` when... | Returns `False` when... |
+|----------|-------------------------|-------------------------|
+| `all()`  | All elements are truthy | At least one element is falsy |
+| `any()`  | At least one element is truthy | All elements are falsy |
+
+The LEGB rule explains the order in which Python searches for variables. LEGB stands for the following scopes:
+
+1. **L (Local)**: Variables defined within the current function or method.
+2. **E (Enclosing)**: Variables from any enclosing function or method, if one exists.
+3. **G (Global)**: Variables defined at the module level.
+4. **B (Built-in)**: The built-in scope, which includes Python's standard functions and objects.
+
+When searching for a variable, Python follows this order, returning the first one it finds without continuing the search.🚀
+
+In Python, **Local (L)** refers to the scope of variables that are defined within the current function or method. These variables are only accessible within that specific function or method and cannot be accessed outside of it.
+
+For example:
+
+```python
+def example_function():
+    x = 10  # x is a local variable within example_function
+    print(x)
+
+example_function()
+print(x)  # This will raise an error since x is local to example_function
+```
+
+In the example above, `x` is a **local variable** within `example_function`, and trying to access it outside the function raises an error since it doesn't exist in the global scope.
+
+In Python, **Global (G)** refers to variables that are defined at the module level, outside of any functions or classes. These variables are accessible from anywhere within the module, including inside functions or methods, unless they are shadowed by local variables.
+
+For example:
+
+```python
+x = 5  # x is a global variable
+
+def example_function():
+    print(x)  # Accessing the global variable inside the function
+
+example_function()  # This will print 5
+print(x)  # This will also print 5, since x is global
+```
+
+In the example above, `x` is a **global variable**, defined outside of `example_function`. It can be accessed both inside and outside the function. However, if you modify the global variable inside a function, you need to use the `global` keyword to avoid creating a new local variable with the same name:
+
+```python
+x = 5
+
+def example_function():
+    global x
+    x = 10  # Modifies the global variable x
+
+example_function()
+print(x)  # This will print 10, since the global x was modified
+```
+
+Without the `global` keyword, Python would treat `x` as a local variable within the function, and any changes to it would not affect the global variable.
+
+When a variable with the same name exists both globally and locally (inside a function), the **local variable** takes precedence within the function. This means that when you reference the variable inside the function, Python will use the local version, not the global one. The global variable remains unaffected unless you explicitly modify it using the `global` keyword.
+
+Here’s an example to demonstrate this:
+
+```python
+x = 10  # Global variable
+
+def example_function():
+    x = 20  # Local variable with the same name
+    print(x)  # Prints the local variable x
+
+example_function()
+print(x)  # Prints the global variable x, which remains 10
+```
+
+### Explanation:
+- Inside `example_function`, a local variable `x` is defined with the value `20`. This local `x` **shadows** the global `x` within the function, so when `print(x)` is called inside the function, it prints the local variable's value (20).
+- After the function call, the global `x` remains unchanged because the local variable only exists within the function's scope.
+
+### Modifying the Global Variable:
+If you want to modify the global variable inside the function, you need to use the `global` keyword:
+
+```python
+x = 10  # Global variable
+
+def example_function():
+    global x  # Refer to the global variable
+    x = 20  # Modify the global variable
+    print(x)  # Prints the modified global variable
+
+example_function()
+print(x)  # Prints 20, as the global variable was modified
+```
+
+In this case, the `global x` statement tells Python to use the global variable instead of creating a local one.
 
 
 
