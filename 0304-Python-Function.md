@@ -342,6 +342,43 @@ display_info(name="철수", age=20, city="서울")
 - **1. 함수 정의 및 사용법**: 간단한 함수 정의 예시와 사용법을 설명합니다.
 - **2. 매개변수 종류**: 각 종류의 매개변수(포지셔널, 기본값, 가변, 키워드 가변 매개변수)를 설명하고 예시를 추가했습니다.
 - **정리**: 함수를 설계할 때 매개변수의 역할과 사용법을 명확히 이해하는 것이 중요합니다.
+```
+재귀함수
+파일탐색
+```python
+import os
+
+def find_file(directory, target_filename):
+    """Recursively searches for a file in the given directory."""
+    for entry in os.scandir(directory):
+        if entry.is_file() and entry.name == target_filename:
+            print(f"Found: {entry.path}")
+        elif entry.is_dir():
+            find_file(entry.path, target_filename)  # Recursive call
+
+# Example usage
+find_file("/path/to/search", "target.txt")
+```
+## 람다함수
+In Python, lambda functions (also called anonymous functions) are concise, one-line functions that do not require a def keyword. They are particularly useful for short, throwaway functions used in places where defining a full function is unnecessary.
+```python
+file_lists = ['data.txt', 'music.mp3']
+def findExtention(filepath):
+  return filepath.split('.')[-1]
+
+list(map(findExtention, file_lists))
+```
+```python
+# lambda filepath: filepath.split('.')[-1]
+list(map(lambda filepath: filepath.split('.')[0], file_lists))
+```
+```python
+myFun = lambda filepath: filepath.split('.')[0]
+print(myFun("abc.test"))
+```
+
+
+
 
 
 
