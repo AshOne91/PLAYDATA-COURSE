@@ -134,4 +134,215 @@ print(introduction('영희', 20)) # 기본값을 모두 덮어씀
 ```
 Positional arguments are matched to parameters in the order they are provided in the function call.
 
+# 가변 매개변수
+- 매개변수의 갯수가 정해지지 않음
+```python
+def sum_number(lists)
+  return sum(lists)
+
+sample_lists = [100]
+
+print(sum_number(sample_lists))
+```
+What are variable-length parameters (Var-args) in Python?
+In Python, variable-length parameters allow you to pass a variable number of arguments to a function. There are two types of variable-length parameters:
+*args (Non-keyword arguments) -> tuple
+**kwargs (Keyword arguments) -> dictionary
+```python
+def print_details(name, *hobbies, **additional_info):
+    print(f'Name: {name}')
+    print(f'Hobbies: {", ".join(hobbies)}')
+    for key, value in additional_info.items():
+        print(f'{key}: {value}')
+
+# Passing positional and keyword arguments
+print_details('Chulsoo', 'Reading', 'Swimming', age=25, city='Seoul')
+```
+Explanation:
+*hobbies collects the positional arguments ('Reading', 'Swimming').
+**additional_info collects the keyword arguments (age=25, city='Seoul').
+The function prints both the positional and keyword arguments.
+
+# What are Packing and Unpacking in Python?
+packing
+패킹해서 받겠다.
+```python
+def pack_values(*args):
+    return args  # 'args' will be a tuple containing all passed values
+
+# Packing values into a tuple
+packed = pack_values(1, 2, 3, 4)
+print(packed)  # Output: (1, 2, 3, 4)
+```
+unpacking
+풀어서 전달하겠다.
+```python
+def greet(name, age):
+    return f'Hello, {name}! You are {age} years old.'
+
+# Packing arguments into a tuple
+args = ('Chulsoo', 25)
+
+# Unpacking the tuple when calling the function
+print(greet(*args))  # Output: Hello, Chulsoo! You are 25 years old.
+```
+```python
+def sample_fun1(*args): # 여러개의 전달값을 한개의 매개변수로 받음
+  for arg in args:
+    print(f'전달한 매개변수는: [arg]', end = ' ' )
+
+sample_fun1( 10, '안녕하세요')
+
+# 한개의 전달값을 여러개의 매개변수로 받음 - unpacking
+def sample1_fun2_unpack(a,b,c,d):
+  print(a, b, c, d)
+
+send_data = 10, 20, '안녕하세요', 40
+sample1_fun2_unpack(*send_data)
+```
+Is it possible to use packing and unpacking simultaneously in Python?
+```python
+def greet(name, age, city):
+    return f'Hello, {name}! You are {age} years old and live in {city}.'
+
+# Packing arguments into a tuple
+args = ('Chulsoo', 25, 'Seoul')
+
+# Unpacking the tuple when calling the function
+print(greet(*args))  # Output: Hello, Chulsoo! You are 25 years old and live in Seoul.
+```
+keyword variable parameters
+```python
+def show_person_details(name, age, **additional_info):
+    print(f'Name: {name}')
+    print(f'Age: {age}')
+    for key, value in additional_info.items():
+        print(f'{key}: {value}')
+
+# Calling the function with variable keyword arguments
+show_person_details('John', 30, city='New York', job='Engineer', hobby='Cycling')
+```
+```python
+# 함수설계할때  *args  라고 하면 함수를 호출하는 쪽에서는 값을 나열하면 된다.
+# 데이터전달형태 :  1,2,3,4,5,6
+
+# 함수설계할때  **kwargs  라고 하면 함수를 호출하는 쪽에서는 값을 나열하면 된다.
+# 데이터전달형태 :  name='홍길동', age=20
+
+# def introduction(name = '홍길동', age = 10):  # positional argument
+def introduction(**kwargs):  # keyward variable argument
+  return f"이름 : { kwargs['name']} /  나이:{kwargs['age'] }"
+
+introduction(name='홍길동', age=20)
+
+# unpacking을 좀더 많이 사용..  ***
+def introduction(name = '홍길동', age = 10):  # positional argument
+  return f"이름 : {name} 나이:{age}"
+
+send_data = {'name':'홍길동', 'age':20}
+introduction(**send_data)
+```
+# 여러개의 값을 반환하기
+```python
+# 값을 전달받아서 총합과 평균을 반환
+def sum_avg(lists):
+  return sum(lists), sum(lists)/len(lists)
+
+import random
+data = random.sample(range(1,101), 10)  # 1 ~ 100
+print(f'data : {data}')
+total, avg = sum_avg(data)
+print(f'총합 : {total}, 평균 : {avg}')
+```
+다음은 요청하신 내용을 정리하고 첨삭하여 마크다운 형식으로 작성한 것입니다:
+
+```markdown
+# 함수 사용법 정리
+
+## 1. 함수의 정의 및 사용 방법
+함수는 특정 작업을 수행하는 코드 블록입니다. 함수는 `def` 키워드를 사용하여 정의하고, 필요할 때 호출하여 사용할 수 있습니다.
+
+```python
+def greeting(name):
+    return f"안녕, {name}!"
+
+print(greeting("철수"))  # 출력: 안녕, 철수!
+```
+
+## 2. 매개변수의 정의 및 종류
+
+### 2-1. Positional Argument (기본 사용법)
+- **정해진 갯수**와 **정해진 위치**에서 값을 전달받습니다.
+- 호출할 때 매개변수 이름 대신 순서대로 값을 전달해야 하며, 순서를 바꾸면 오류가 발생할 수 있습니다.
+
+```python
+def greet(name, age):
+    return f"이름: {name}, 나이: {age}"
+
+print(greet("철수", 20))  # 출력: 이름: 철수, 나이: 20
+```
+
+- `매개변수 이름=값` 형식으로 호출하면 **순서를 바꿔서 호출할 수 있습니다.**
+
+```python
+print(greet(age=20, name="철수"))  # 출력: 이름: 철수, 나이: 20
+```
+
+### 2-2. Default Argument (기본값을 가진 매개변수)
+- 매개변수에 기본값이 정해져 있는 경우, 호출할 때 해당 매개변수의 값을 생략하면 기본값을 사용합니다.
+- 기본값을 가진 매개변수는 **positional argument 뒤에** 위치해야 합니다.
+
+```python
+def greet(name, age=10):
+    return f"이름: {name}, 나이: {age}"
+
+print(greet("철수"))  # 출력: 이름: 철수, 나이: 10
+print(greet("영희", 25))  # 출력: 이름: 영희, 나이: 25
+```
+
+### 2-3. 가변 매개변수 (Variable Arguments)
+- **`*args`**를 사용하면 전달하는 매개변수들이 **튜플** 형태로 묶여서 전달됩니다. 
+- **packing**: 여러 값을 하나로 묶어 처리하는 방식입니다.
+
+```python
+def add_numbers(*args):
+    return sum(args)
+
+print(add_numbers(1, 2, 3, 4))  # 출력: 10
+```
+
+- **Unpacking**: 매개변수를 미리 튜플로 묶어서 전달할 때 `*`를 붙여 전달합니다.
+
+```python
+numbers = (1, 2, 3, 4)
+print(add_numbers(*numbers))  # 출력: 10
+```
+
+### 2-4. 키워드 가변 매개변수 (Keyword Variable Arguments)
+- **`**kwargs`**를 사용하면 전달하는 매개변수들이 **딕셔너리** 형태로 묶여서 전달됩니다.
+- 키워드 매개변수를 사용할 때 주로 사용됩니다.
+
+```python
+def display_info(**kwargs):
+    for key, value in kwargs.items():
+        print(f"{key}: {value}")
+
+display_info(name="철수", age=20, city="서울")
+# 출력:
+# name: 철수
+# age: 20
+# city: 서울
+```
+
+## 3. 결론
+- 함수의 매개변수는 **Positional Argument**, **Default Argument**, **가변 매개변수(`*args`)**, **키워드 가변 매개변수(`**kwargs`)** 등 여러 가지 종류가 있으며, 이를 적절하게 활용하면 코드의 유연성과 가독성을 높일 수 있습니다.
+```
+
+### 설명:
+- **1. 함수 정의 및 사용법**: 간단한 함수 정의 예시와 사용법을 설명합니다.
+- **2. 매개변수 종류**: 각 종류의 매개변수(포지셔널, 기본값, 가변, 키워드 가변 매개변수)를 설명하고 예시를 추가했습니다.
+- **정리**: 함수를 설계할 때 매개변수의 역할과 사용법을 명확히 이해하는 것이 중요합니다.
+
+
+
  
