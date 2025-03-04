@@ -439,7 +439,8 @@ print(f'2 : {sum(map(lambda x: x % 2, sample_lists)) == 0 }')
 print(f'3 : {len(list((filter(lambda x: x % 2 !=0 ,sample_lists)))) == 0}')
 
 # 4 ramda 두개의 각각에 대해서 짝수조건을 걸고 두의 and 결과
-print(f'4 : {reduce(lambda x,y : x % 2 == 0 and y % 2 == 0, sample_lists)}')
+print(f'4 : {reduce(lambda x,y : x % 2 == 0 and y % 2 == 0, sample_lists)}') // 잘못된 코드
+result = reduce(lambda x, y: x and (y % 2 == 0), sample_lists, True)
 ```
 ### `all()` and `any()` in Python  
 
@@ -582,6 +583,286 @@ print(x)  # Prints 20, as the global variable was modified
 
 In this case, the `global x` statement tells Python to use the global variable instead of creating a local one.
 
+```python
+count = 0
+def increment():
+  count += 1   # count 변수는 전역이 아니라 함수안에서사용했으므로 지역이다. 그런데.. += 연산자는 count 변수가 존재하는 상태에서
+  # 연산이 가능... 즉 변수에 값이 할당되지않은 상태에서 연산함.. 다시말해서 변수 생성하지 않고 사용함
+
+increment()
+```
+**Enclosing scope** refers to the scope of a variable in an outer function that is accessible by an inner, nested function. The inner function can access the variables of its enclosing (outer) function, but the outer function cannot access the inner function's variables.
+
+### Example:
+```python
+def outer():
+    x = 10  # Variable in outer function
+
+    def inner():
+        print(x)  # Inner function can access outer's variable
+
+    inner()  # Calling inner function
+
+outer()
+```
+
+In this case, `inner` can access the `x` variable from `outer`, but `outer` cannot access any variables inside `inner`.
+
+## LEGB
+```python
+x = '전역 x'
+def outer():
+  x = '외부 x'  # E  Enclosing
+  def inner():
+    x = '내부 x'  # Local
+    print(f'inner x : {x}')
+  inner()
+  print(f'outer x: {x}')
+
+outer()
+print(f'전역 x : {x}')
+```
+```python
+# 파이썬은 재미있고 유용합니다.
+# 자연어는 어렵습니다.
+
+# 현재문장의 단어수 3, 누적 단어수 3
+# 현재문장의 단어수 2, 누적 단어수 5
+words_count = 0
+def print_local_count(current_sentence):
+  global words_count
+  words = current_sentence.split()
+  words_count += len(words)
+  local_count = len(words)
+  print(f'현재문장의 단어수 : {local_count}')
+  print(f'누적 단어수 : {words_count}')
+
+print_local_count('파이썬은 재미있고 유익합니다.')
+print_local_count('자연어는 어렵습니다.')
+```
+```python
+# 파이썬은 재미있고 유용합니다.
+# 자연어는 어렵습니다.
+
+# 현재문장의 단어수 3, 누적 단어수 3
+# 현재문장의 단어수 2, 누적 단어수 5
+words_count = 0
+def process_text(text):
+  global words_count  # 전역변수
+  words = text.split()  # 지역변수 process_text함수 내부에서는 사용가능
+  words_count += len(words)
+
+  def print_local_count():
+    local_count = len(words)   # 지역변수     print_local_countd에서만 사용가능
+    print(f'현재문장의 단어수 : {local_count}')
+    print(f'누적 단어수 : {words_count}')
+  print_local_count()
+
+process_text('파이썬은 재미있고 유용합니다.')
+process_text('자연어는 어렵습니다.')
+```
+```python
+# 클로징을 이용하는것을 클로저 상태 유지
+def create_counter():
+  count = 0  # 외부변수
+  def increment(text):
+    nonlocal count
+    count += len(text.split())
+    return count
+
+  print(f'create_counter count: {count}')
+
+  return increment  # 내부함수 리턴
+
+counter = create_counter()  # 사용은 외부함수를 이용해서 내부함수를 리턴
+print(counter('파이썬은 재미있고 유용합니다.'))  # 3
+print(counter('자연어는 어렵습니다.'))  # 5
+```
+```python
+def create_multi(factor):
+  def mulipier(x):
+    return x * factor
+  return mulipier
+
+myFunc1 =  create_multi(3)
+print( myFunc1(4) )
+print( myFunc1(5) )
+```
+함수의 동작 방법을 설명하기
+```python
+# 계산기
+def add(x, y):
+  """
+  x : 정수
+  y : 정수
+  return 두개의 정수를 더한 값
+  """
+  return x + y
+```
+매개변수로 함수를 전달
+```python
+# 계산기 값을 두개로 하느
+def calculator(func, x, y):
+  return func(x, y)
+```
+```python
+# 계산기  값을 두개로 하는
+def calculator( func , x, y):
+  return func(x,y)
+# 두개 정수 값을 더하는 계산기를 실행
+# 두개 정수 값을 비교해서 큰 값을 리턴하는 계산기
+# 두개 정수 값을 곱하는 계산기
+print( calculator(lambda x, y : x+y,  10 ,20) )
+print( calculator(lambda x, y : x if x > y else y,  10 ,20) )
+print( calculator(lambda x, y : x * y,  10 ,20) )
+```
+Python's **ternary operator** is a way to express a simple `if-else` condition in a more compact form, making the code cleaner and easier to read.
+
+### Basic Syntax:
+```python
+x if condition else y
+```
+
+### Explanation:
+- `condition`: The condition to be evaluated. If it’s `True`, `x` will be returned.
+- `else`: If the `condition` is `False`, `y` will be returned.
+
+### Example 1:
+```python
+a = 5
+b = 10
+result = "a is greater" if a > b else "b is greater"
+print(result)
+```
+
+### Output:
+```
+b is greater
+```
+
+### Explanation:
+- The condition `a > b` is `False`, so `"b is greater"` is assigned to `result`.
+
+### Example 2:
+```python
+age = 20
+status = "Adult" if age >= 18 else "Minor"
+print(status)
+```
+
+### Output:
+```
+Adult
+```
+
+### Why use a ternary operator?
+- **Conciseness**: You can write conditional statements in a single line, making the code more readable.
+- **Efficiency**: It eliminates the need for multi-line `if-else` blocks for simple conditions.
+
+### Caution:
+- While ternary operators are great for simple conditions, **avoid using them for complex logic**, as they might decrease readability. In such cases, a traditional `if-else` block is more appropriate.
+
+Here’s a more detailed summary:
+
+### **Functions in Python**
+- **Function Definition**: Functions are defined using `def` followed by the function name and parameters.
+  
+  ```python
+  def greet(name):
+      print(f"Hello, {name}!")
+  ```
+
+- **Parameters**:
+  - **Positional Arguments**: Arguments passed in the order they appear in the function definition.
+  
+    ```python
+    def greet(name, age):
+        print(f"Hello {name}, you are {age} years old.")
+    ```
+
+  - **Default Arguments**: Arguments that have a default value if not provided by the user.
+  
+    ```python
+    def greet(name, age=30):
+        print(f"Hello {name}, you are {age} years old.")
+    ```
+
+  - **Variable Arguments**: You can use `*args` for packing and `**kwargs` for keyword arguments.
+  
+    - **Packing**: Collects arguments into a tuple.
+    
+      ```python
+      def greet(*args):
+          for arg in args:
+              print(f"Hello {arg}")
+      ```
+
+    - **Unpacking**: Unpacks a sequence into individual arguments.
+    
+      ```python
+      details = ("Alice", 25)
+      greet(*details)
+      ```
+
+  - **Keyword Variable Arguments**: Uses `**kwargs` to pass variable keyword arguments (e.g., dictionary).
+  
+    ```python
+    def greet(**kwargs):
+        for key, value in kwargs.items():
+            print(f"{key}: {value}")
+    ```
+
+- **Lambda Functions**: Anonymous functions defined using `lambda`.
+  
+  ```python
+  add = lambda x, y: x + y
+  print(add(3, 4))  # Output: 7
+  ```
+
+- **Functions that accept other functions**: Functions like `map()`, `filter()`, and `reduce()` can take other functions as arguments.
+  
+  Example of `map()`:
+  
+  ```python
+  result = map(lambda x: x ** 2, [1, 2, 3])
+  print(list(result))  # Output: [1, 4, 9]
+  ```
+
+---
+
+### **Variable Scope (LEGB Rule)**
+- **LEGB** stands for **Local**, **Enclosing**, **Global**, and **Built-in**:
+  1. **Local**: The innermost scope (inside a function).
+  2. **Enclosing**: The scope of enclosing functions (if applicable).
+  3. **Global**: The top-level scope (outside all functions).
+  4. **Built-in**: The outermost scope containing Python’s built-in functions and variables (like `print()`, `len()`).
+
+  **Example**:
+  
+  ```python
+  x = 10  # Global scope
+  
+  def outer():
+      x = 20  # Enclosing scope
+      
+      def inner():
+          x = 30  # Local scope
+          print(x)  # Local x is accessed here
+          
+      inner()
+
+  outer()
+  ```
+
+- **LEGB Search Order**: When a variable is accessed, Python searches in the following order:
+  1. **Local** scope.
+  2. **Enclosing** function scope.
+  3. **Global** scope.
+  4. **Built-in** scope if the variable is not found earlier.
+
+---
+
+This gives you a more detailed view of the concepts. Let me know if you need further clarification!
 
 
  
