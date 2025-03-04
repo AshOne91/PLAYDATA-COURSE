@@ -864,5 +864,80 @@ Here’s a more detailed summary:
 
 This gives you a more detailed view of the concepts. Let me know if you need further clarification!
 
+```python
+total = 0  # 총 수입을 저장할 변수
+
+while True:
+    # 나이를 입력받는다
+    age = int(input("나이를 입력하세요: "))
+
+    # 나이에 따른 입장료 계산
+    if age >= 19:  # 19 20 21
+        entrance_fee = 10000  # 성인
+    elif age >= 13:  # 13 ~ 18
+        entrance_fee = 7000  # 청소년
+    elif age >= 8:
+        entrance_fee = 3000  # 어린이
+    else:
+        print('잘못된 나이 (8살 이상 입력)')
+        continue  # 잘못된 나이는 다시 입력받기
+
+    # 입장료를 수입에 누적
+    total += entrance_fee
+
+    # 계속할지 물어본다
+    continue_program = input("계속하시겠습니까? (y/Y): ")
+    if continue_program.lower() != 'y':
+        break
+
+# 프로그램 종료 후 총 수입금액 출력
+print(f"총 수입금액은 {total:,}원입니다.")
+```
+```python
+# 함수정의
+# 입력
+def getAge():
+  # 나이를 입력받는다
+  age = int(input("나이를 입력하세요: "))
+  return age
+# 처리
+def getEntranceFee(age):
+  # 나이에 따른 입장료 계산
+    if age >= 19:  # 19 20 21
+        entrance_fee = 10000  # 성인
+    elif age >= 13:  # 13 ~ 18
+        entrance_fee = 7000  # 청소년
+    elif age >= 8:
+        entrance_fee = 3000  # 어린이
+    else:
+        return None
+    return entrance_fee
+# 출력
+def printTotal(total):
+  print(f"총 수입금액은 {total:,}원입니다.")
+total = 0
+def process():
+  global total
+  while True:
+    age = getAge()
+    entrance_fee = getEntranceFee(age)
+    if entrance_fee == None:
+      print("잘못된 입력입니다.")
+      continue
+    else:
+      # 계속할지 물어본다
+      continue_program = input("계속하시겠습니까? (y/Y): ")
+      if continue_program.lower() != 'y':
+          break
+  total += entrance_fee
+# 함수를 이용한 메인 실행부분
+total = 0
+process()
+#출력
+printTotal(total)
+```
+
+
+
 
  
