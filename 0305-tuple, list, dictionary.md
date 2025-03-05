@@ -1235,6 +1235,124 @@ print(s5 is s6)  # True (같은 객체 공유)
 
 즉, `a = 100`을 실행하면 **100이라는 값을 키로 해서 Python 내부 객체 테이블에서 조회하고, 이미 존재하면 기존 객체를 재사용**하는 방식입니다.
 
+이 코드는 **데코레이터(Decorator)**를 사용하여 함수를 감싸는 기능을 구현한 것입니다. 파이썬에서 데코레이터는 함수의 동작을 수정하거나 새로운 기능을 추가할 때 유용합니다.
+
+---
+
+## **1. 코드 분석**
+### **1) 데코레이터 함수 정의**
+```python
+def decorator(func):  # 매개변수로 함수(func)를 받음
+    def wrapper():  # 내부 함수(wrapper)를 정의
+        print('함수 실행전')  # func() 실행 전 추가 기능
+        func()  # 원래 함수 실행
+        print('함수 실행후')  # func() 실행 후 추가 기능
+    return wrapper  # wrapper 함수를 반환
+```
+- `decorator(func)`는 **함수를 매개변수로 받아** 추가적인 기능을 부여하는 함수이다.
+- 내부에 `wrapper()`라는 새로운 함수를 정의하고, 원래 함수(`func`) 실행 전후에 출력문을 추가한다.
+- 마지막에 `wrapper` 함수를 반환하여, 기존 함수 대신 실행될 함수를 제공한다.
+
+---
+
+### **2) 데코레이터 적용**
+```python
+@decorator
+def say_hello():
+    print('hello')
+```
+위 코드는 다음과 동일하다:
+```python
+def say_hello():
+    print('hello')
+
+say_hello = decorator(say_hello)  # say_hello를 decorator 함수로 감쌈
+```
+즉, `say_hello` 함수는 `decorator`를 거쳐서 `wrapper` 함수로 대체된다.
+
+---
+
+### **3) 실행 과정**
+```python
+say_hello()
+```
+실제 실행되는 함수는 `wrapper()`이다. 따라서 실행 순서는 다음과 같다:
+
+1. `say_hello()` 호출 → 사실은 `wrapper()` 호출
+2. `"함수 실행전"` 출력
+3. 원래 `say_hello()` (`func()`) 실행 → `"hello"` 출력
+4. `"함수 실행후"` 출력
+
+#### **최종 출력 결과**
+```
+함수 실행전
+hello
+함수 실행후
+```
+
+---
+
+## **2. 데코레이터를 사용하는 이유**
+- 기존 함수를 변경하지 않고, **추가적인 기능을 부여**할 수 있다.
+- **중복 코드를 줄일 수 있다**. 예를 들어, 로깅, 성능 측정, 권한 체크 등을 함수 실행 전에 자동으로 추가할 수 있다.
+
+---
+
+## **3. 응용: 데코레이터를 활용한 실용 예제**
+### **(1) 함수 실행 시간 측정**
+```python
+import time
+
+def time_logger(func):
+    def wrapper():
+        start = time.time()
+        func()
+        end = time.time()
+        print(f"실행 시간: {end - start:.5f}초")
+    return wrapper
+
+@time_logger
+def example():
+    time.sleep(2)
+    print("Function executed!")
+
+example()
+```
+#### **출력 결과**
+```
+Function executed!
+실행 시간: 2.00021초
+```
+이처럼 데코레이터를 활용하면 **기존 함수의 동작을 수정하지 않고도 추가적인 기능을 넣을 수 있다**.
+
+## 일단 외어라
+### 데코레이터 decorator : java 의 추상화 비슷 한 개념
+- 함수나 메소드를 감싸서 추가적인 기능을 제공
+- 기존 코드를 수정하지 않고 동작을 확장
+- 고차원함수 : 다른함수를 인자로 받아서 새로운 하수를 반환
+@데코레이터_이름 을 함수 정의부분 위에 선언한다
+```python
+def log_decorator(func):
+  def wrapper(*args, **kwargs):  # 모든 종류의 인자를 처리한다
+    print(f'{func.__name__}호출  args:{args}, kwargs:{kwargs}')
+    result = func(*args, **kwargs)
+    return result
+  return wrapper
+
+@log_decorator
+def add(a,b):
+  return a + b
+print(add(10,20))
+
+@log_decorator
+def makeString(name,age):
+  return name + str(age)
+
+print(makeString(name='홍길동', age = 10))
+```
+
+
+
 
 
 
