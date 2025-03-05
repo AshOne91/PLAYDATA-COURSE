@@ -877,8 +877,159 @@ print(flattened)
 sample = [ ('name','홍길동'),('age',20),('score', 95)          ]
 {  key:value for key,value in sample    }
 ```
+다음은 `dictionary`, `list`, `tuple`의 차이점을 정리한 표입니다.
+
+| 자료형 | 변경 가능성 (Mutable) | 순서 보장 | 중복 허용 | 주요 특징 |
+|--------|----------------|---------|---------|---------|
+| `list` | ✅ 변경 가능 | ✅ 순서 유지 | ✅ 중복 가능 | 배열과 유사, 요소 추가/삭제 가능 |
+| `tuple` | ❌ 변경 불가 | ✅ 순서 유지 | ✅ 중복 가능 | 리스트와 유사하지만 불변(Immutable) |
+| `dict` | ✅ 변경 가능 | ✅ (Python 3.7 이상) | ❌ 키 중복 불가 | 키-값 쌍 저장, 키를 이용한 빠른 검색 가능 |
+
+### 혼합 사용 예제
 ```python
+# 리스트 안에 튜플
+list_with_tuple = [(1, 2), (3, 4), (5, 6)]
+
+# 튜플 안에 리스트 (리스트는 변경 가능)
+tuple_with_list = ([1, 2], [3, 4], [5, 6])
+tuple_with_list[0].append(99)  # 리스트 요소는 변경 가능
+
+# 딕셔너리 안에 리스트와 튜플
+dict_with_list_tuple = {
+    "numbers": [1, 2, 3],  # 리스트
+    "coordinates": (9.0, 8.5)  # 튜플
+}
+
+# 리스트 안에 딕셔너리
+list_with_dict = [{"name": "Alice"}, {"name": "Bob"}]
+
+# 튜플 안에 딕셔너리 (튜플 요소로 변경 가능한 객체 포함 가능)
+tuple_with_dict = ({"key1": "value1"}, {"key2": "value2"})
+tuple_with_dict[0]["key1"] = "new_value"  # 변경 가능
 ```
+혼합 사용 시에는 **변경 가능 여부**를 잘 고려해야 합니다. `tuple`은 불변이지만, 내부에 `list`나 `dict`를 포함하면 해당 내부 객체는 변경할 수 있습니다.
+
+C#과 Python에서 **값(value)과 참조(reference)의 차이**를 비교해 보겠습니다.
+
+---
+
+## **1. C#에서 값 타입과 참조 타입**
+C#은 **값 타입(Value Type)**과 **참조 타입(Reference Type)**을 명확하게 구분합니다.
+
+### **값 타입 (Value Type)**
+- 스택(Stack)에 저장됨
+- 변수 간 복사 시, **값 자체가 복사됨 (독립적인 메모리)**
+- 변경해도 원본 변수에 영향 없음
+- 예: `int`, `float`, `double`, `char`, `bool`, `struct`
+
+```csharp
+int a = 10;
+int b = a; // 값이 복사됨
+b = 20;
+Console.WriteLine(a); // 10 (원본 값 유지)
+Console.WriteLine(b); // 20
+```
+
+### **참조 타입 (Reference Type)**
+- 힙(Heap)에 저장됨, 변수는 참조(주소)만 가짐
+- 변수 간 복사 시, **주소(참조)가 복사됨 (동일한 객체를 가리킴)**
+- 변경하면 원본도 영향을 받음
+- 예: `class`, `object`, `string`, `array`
+
+```csharp
+class Person { public string Name; }
+
+Person p1 = new Person();
+p1.Name = "Alice";
+
+Person p2 = p1; // 참조가 복사됨 (같은 객체를 가리킴)
+p2.Name = "Bob";
+
+Console.WriteLine(p1.Name); // Bob (원본도 변경됨)
+Console.WriteLine(p2.Name); // Bob
+```
+
+---
+
+## **2. Python에서 값과 참조**
+Python은 **모든 것이 객체(Object)**이며, 변수는 **객체를 참조(Reference)**합니다.
+
+### **불변 객체 (Immutable)**
+- 값을 변경할 수 없음 (새로운 객체를 생성)
+- 변수 간 복사 시 **새로운 객체를 생성**
+- 예: `int`, `float`, `str`, `tuple`
+
+```python
+a = 10
+b = a  # 새로운 객체가 생성됨
+b = 20
+print(a)  # 10 (원본 유지)
+print(b)  # 20
+```
+
+```python
+s1 = "hello"
+s2 = s1
+s2 = "world"
+print(s1)  # "hello" (변경되지 않음)
+print(s2)  # "world"
+```
+
+### **가변 객체 (Mutable)**
+- 내부 값을 변경할 수 있음
+- 변수 간 복사 시 **참조만 복사됨 (같은 객체를 가리킴)**
+- 예: `list`, `dict`, `set`
+
+```python
+lst1 = [1, 2, 3]
+lst2 = lst1  # 참조가 복사됨 (같은 리스트를 가리킴)
+lst2.append(4)
+
+print(lst1)  # [1, 2, 3, 4] (원본 변경됨)
+print(lst2)  # [1, 2, 3, 4]
+```
+
+---
+
+## **3. 값과 참조 비교 요약**
+| 언어 | 값 타입 (Value Type) | 참조 타입 (Reference Type) |
+|------|---------------------|-------------------------|
+| C#   | `int`, `float`, `char`, `struct` (스택에 저장, 값 복사) | `class`, `array`, `string` (힙에 저장, 참조 복사) |
+| Python | `int`, `float`, `str`, `tuple` (불변, 새로운 객체 할당) | `list`, `dict`, `set` (가변, 참조 복사) |
+
+---
+
+## **4. 값과 참조를 다루는 방법**
+### **C#에서 참조를 피하려면 `struct` 사용**
+```csharp
+struct Point { public int X, Y; }
+
+Point p1 = new Point { X = 1, Y = 2 };
+Point p2 = p1; // 값이 복사됨 (독립적)
+p2.X = 10;
+
+Console.WriteLine(p1.X); // 1 (원본 유지)
+Console.WriteLine(p2.X); // 10
+```
+
+### **Python에서 참조를 피하려면 `copy.deepcopy` 사용**
+```python
+import copy
+
+lst1 = [[1, 2], [3, 4]]
+lst2 = copy.deepcopy(lst1)  # 깊은 복사 (새로운 객체 생성)
+
+lst2[0][0] = 99
+print(lst1)  # [[1, 2], [3, 4]] (원본 유지)
+print(lst2)  # [[99, 2], [3, 4]]
+```
+
+---
+
+## **결론**
+- **C#은 값 타입과 참조 타입이 명확히 구분됨**
+- **Python은 모든 것이 객체지만, 불변(immutable) 객체와 가변(mutable) 객체가 있음**
+- **참조를 피하려면 C#은 `struct` 사용, Python은 `copy.deepcopy` 사용**
 
 
 
