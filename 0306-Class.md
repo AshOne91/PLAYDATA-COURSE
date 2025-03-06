@@ -563,3 +563,233 @@ GC 실행 요청함.
 👉 Python은 "참조 카운트가 0이면 즉시 소멸"하므로 **C#보다 소멸 시점이 더 예측 가능함.**  
 👉 하지만, Python도 **순환 참조가 생기면 GC가 개입해야 해서 `__del__()`이 바로 실행되지 않을 수도 있음.**
 
+Python에서는 **`static` 변수**라는 개념이 직접적으로 존재하지 않습니다. 하지만 Python에서는 **클래스 변수**와 **인스턴스 변수**를 통해 비슷한 기능을 구현할 수 있습니다.
+
+### **1. 클래스 변수 = Static 변수?**
+
+Python에서 **클래스 변수**는 C++, Java에서의 **`static` 변수**와 유사한 역할을 합니다. 클래스 변수를 사용하면, **모든 인스턴스가 공유**하는 변수를 만들 수 있습니다. `static` 변수의 핵심은 **객체와 관계없이 클래스 수준에서 공유되는 변수**인데, Python의 **클래스 변수**가 바로 이런 용도로 사용됩니다.
+
+### **2. Python의 staticmethod와 classmethod**
+
+또한, Python에서는 **`staticmethod`**와 **`classmethod`**라는 메서드를 사용해 `static`과 유사한 기능을 구현할 수 있습니다. 이 메서드들은 객체 인스턴스나 클래스 인스턴스에 접근하지 않고, **클래스 자체에서 실행되는 메서드**입니다.
+
+- **`staticmethod`**: 클래스의 인스턴스나 클래스 자체를 참조하지 않으므로, 클래스 변수나 인스턴스 변수에 접근할 수 없습니다.
+- **`classmethod`**: 클래스 자체를 첫 번째 인자로 받기 때문에, 클래스 변수에 접근할 수 있습니다.
+
+### **예시:**
+
+#### 1. **클래스 변수 (Static 변수처럼 사용)**
+
+```python
+class Dog:
+    species = "Canine"  # 클래스 변수 (Static 변수처럼)
+
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+# 객체 생성
+dog1 = Dog("Buddy", 3)
+dog2 = Dog("Max", 5)
+
+# 클래스 변수 사용
+print(dog1.species)  # Canine
+print(dog2.species)  # Canine
+
+# 클래스 변수 수정
+Dog.species = "Feline"  # 클래스 변수 변경
+
+print(dog1.species)  # Feline
+print(dog2.species)  # Feline
+```
+
+#### 2. **`staticmethod` 사용**
+
+```python
+class Dog:
+    @staticmethod
+    def bark():
+        print("Woof!")
+
+# static method 호출
+Dog.bark()  # Woof!
+```
+
+- `bark` 메서드는 **인스턴스와 관계없이 클래스에서 직접 호출**할 수 있는 **static method**입니다.
+
+#### 3. **`classmethod` 사용**
+
+```python
+class Dog:
+    species = "Canine"
+
+    @classmethod
+    def change_species(cls, new_species):
+        cls.species = new_species
+
+# 클래스 메서드를 통해 클래스 변수 변경
+Dog.change_species("Feline")
+
+print(Dog.species)  # Feline
+```
+
+- `change_species` 메서드는 **클래스 자체를 첫 번째 인자로 받으며**, 이를 통해 클래스 변수에 접근하고 값을 변경합니다.
+
+---
+
+### **정리**
+
+- Python에는 **`static` 변수**라는 용어는 없지만, **클래스 변수**가 그와 유사한 역할을 합니다.
+- **`staticmethod`**와 **`classmethod`**는 `static` 변수처럼 동작할 수 있도록 Python에서 제공하는 기능입니다.
+- `static` 변수의 핵심은 **클래스 수준에서 공유되는 변수**라는 점에서, Python의 **클래스 변수**와 비슷합니다.
+
+- ### **클래스의 인스턴스 (Instance of a Class)**
+
+클래스의 인스턴스는 **클래스**를 바탕으로 만들어진 **객체**입니다. 객체는 클래스를 설계도(청사진)으로 해서 **실제로 메모리 상에 생성된 구체적인 실체**를 의미합니다. 이 객체는 클래스의 정의에 의해 **속성(변수)**과 **메서드(기능)**을 가집니다.
+
+---
+
+## **1️⃣ 클래스와 인스턴스의 차이**
+
+- **클래스**는 객체의 **설계도**입니다. 클래스에는 **속성**과 **기능(메서드)**이 정의되어 있지만, 클래스 자체는 **실제 데이터를 담고 있지 않습니다**.
+- **인스턴스**는 이 클래스를 기반으로 메모리에 **실제로 생성된 객체**입니다. 인스턴스는 각기 다른 **데이터(속성값)**를 가질 수 있습니다.
+
+---
+
+## **2️⃣ 인스턴스 생성하기**
+
+클래스를 정의하고, 그 클래스를 기반으로 **인스턴스를 생성**하려면 **클래스명()**을 사용하여 객체를 만듭니다.
+
+### **예시:**
+
+```python
+class Dog:
+    # 클래스 속성 (클래스 변수)
+    species = "Canine"
+
+    # 인스턴스 초기화 메서드 (__init__) 
+    def __init__(self, name, age):
+        self.name = name  # 인스턴스 변수
+        self.age = age    # 인스턴스 변수
+
+    # 인스턴스 메서드
+    def bark(self):
+        print(f"{self.name} says Woof!")
+
+# 인스턴스 생성
+dog1 = Dog("Buddy", 3)  # Dog 클래스의 인스턴스 생성
+dog2 = Dog("Max", 5)    # 또 다른 Dog 클래스의 인스턴스 생성
+
+# 인스턴스 메서드 호출
+dog1.bark()  # Buddy says Woof!
+dog2.bark()  # Max says Woof!
+```
+
+### **핵심 포인트:**
+- `dog1`과 `dog2`는 **`Dog`** 클래스의 **인스턴스**입니다.
+- 각 인스턴스는 `name`과 `age` 같은 **인스턴스 변수**를 가지고 있으며, 서로 다른 데이터를 가질 수 있습니다.
+- `dog1.bark()`와 `dog2.bark()` 호출 시 각 인스턴스에 맞는 `name` 값이 사용됩니다.
+
+---
+
+## **3️⃣ 인스턴스 변수와 클래스 변수**
+
+- **인스턴스 변수**는 **각 인스턴스마다 독립적인 변수**로, `self`를 통해 정의합니다. 각 객체마다 값이 다를 수 있습니다.
+- **클래스 변수**는 **모든 인스턴스가 공유**하는 변수로, 클래스에서 정의된 값을 참조합니다.
+
+### **예시:**
+
+```python
+class Dog:
+    species = "Canine"  # 클래스 변수
+
+    def __init__(self, name, age):
+        self.name = name  # 인스턴스 변수
+        self.age = age    # 인스턴스 변수
+
+# 인스턴스 생성
+dog1 = Dog("Buddy", 3)
+dog2 = Dog("Max", 5)
+
+# 인스턴스 변수 접근
+print(dog1.name)  # Buddy
+print(dog2.name)  # Max
+
+# 클래스 변수 접근
+print(dog1.species)  # Canine
+print(dog2.species)  # Canine
+```
+
+---
+
+## **4️⃣ 인스턴스 메서드와 클래스 메서드**
+
+- **인스턴스 메서드**는 **인스턴스 변수에 접근**하고, **객체별 동작**을 수행하는 메서드입니다.
+- **클래스 메서드**는 **클래스 변수에 접근**하고, **클래스 자체에 대해 동작**을 수행하는 메서드입니다.
+
+### **예시 (인스턴스 메서드 vs 클래스 메서드):**
+
+```python
+class Dog:
+    species = "Canine"  # 클래스 변수
+
+    def __init__(self, name, age):
+        self.name = name  # 인스턴스 변수
+        self.age = age    # 인스턴스 변수
+
+    def bark(self):  # 인스턴스 메서드
+        print(f"{self.name} says Woof!")
+
+    @classmethod
+    def change_species(cls, new_species):  # 클래스 메서드
+        cls.species = new_species
+
+# 인스턴스 생성
+dog1 = Dog("Buddy", 3)
+dog2 = Dog("Max", 5)
+
+# 인스턴스 메서드 호출
+dog1.bark()  # Buddy says Woof!
+dog2.bark()  # Max says Woof!
+
+# 클래스 메서드를 사용하여 클래스 변수 변경
+Dog.change_species("Feline")
+
+print(dog1.species)  # Feline
+print(dog2.species)  # Feline
+```
+
+- `bark()`는 **인스턴스 메서드**로 인스턴스의 데이터를 사용하여 동작합니다.
+- `change_species()`는 **클래스 메서드**로, **모든 인스턴스에서 공유하는 클래스 변수**를 변경합니다.
+
+---
+
+## **5️⃣ 인스턴스 생성 시 `__init__` 메서드**
+
+`__init__()` 메서드는 **인스턴스가 생성될 때 자동으로 호출**되는 메서드로, 주로 인스턴스 변수들을 초기화하는 데 사용됩니다.
+
+### **예시:**
+
+```python
+class Dog:
+    def __init__(self, name, age):  # __init__ 메서드
+        self.name = name
+        self.age = age
+
+# 객체 생성 시 __init__ 호출
+dog1 = Dog("Buddy", 3)
+dog2 = Dog("Max", 5)
+
+print(dog1.name)  # Buddy
+print(dog2.age)   # 5
+```
+
+---
+
+## **정리**
+
+- **클래스**는 객체의 **설계도**입니다.
+- **인스턴스**는 클래스를 기반으로 생성된 **실체 객체**입니다.
+- **인스턴스 변수**는 각 객체마다 독립적으로 값을 가지며, **클래스 변수**는 모든 인스턴스에서 공유됩니다.
+- **인스턴스 메서드**는 객체마다 동작하고, **클래스 메서드**는 클래스 자체를 대상으로 동작합니다.
+
