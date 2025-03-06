@@ -859,3 +859,291 @@ print(dog.age)   # 4
 - **클래스 변수**가 **인스턴스 변수처럼 동작**할 수 있으므로 주의가 필요합니다.
 
 이렇게 정리하면 각 타입별로 동작 차이를 한눈에 볼 수 있습니다.
+
+### **Python에서 오버로드(Overloading)와 오버라이드(Overriding)**
+Python에서 오버로딩과 오버라이딩은 객체지향 프로그래밍(OOP)에서 메서드를 다루는 중요한 개념입니다.
+
+---
+
+## **1. 오버로딩 (Overloading)**
+오버로딩은 **같은 이름의 메서드를 매개변수의 타입이나 개수에 따라 다르게 동작하도록 정의하는 것**을 의미합니다.  
+하지만, **Python은 전통적인 의미의 메서드 오버로딩을 지원하지 않습니다.**
+
+### **(1) 파이썬에서 오버로딩을 흉내내는 방법**
+Python에서는 **기본값 매개변수(default parameter)** 또는 **가변 인수(\*args, \*\*kwargs)**를 이용하여 오버로딩과 유사한 기능을 구현할 수 있습니다.
+
+#### **예제 1: 기본값을 활용한 오버로딩**
+```python
+class Math:
+    def add(self, a, b=0, c=0):  # 기본값을 설정하여 오버로딩처럼 구현
+        return a + b + c
+
+m = Math()
+print(m.add(5))        # 5 (a만 전달)
+print(m.add(5, 10))    # 15 (a, b 전달)
+print(m.add(5, 10, 15)) # 30 (a, b, c 전달)
+```
+
+#### **예제 2: 가변 인수를 활용한 오버로딩**
+```python
+class Math:
+    def add(self, *args):  # 여러 개의 인수를 받을 수 있음
+        return sum(args)
+
+m = Math()
+print(m.add(5))         # 5
+print(m.add(5, 10))     # 15
+print(m.add(5, 10, 15)) # 30
+```
+💡 **Python에서는 같은 이름의 메서드를 여러 개 정의할 수 없으므로, `*args`나 기본값을 활용하여 오버로딩을 흉내냅니다.**
+
+---
+
+## **2. 오버라이딩 (Overriding)**
+오버라이딩은 **부모 클래스에서 정의한 메서드를 자식 클래스에서 재정의(override)하여 동작을 변경하는 것**을 의미합니다.
+
+### **(1) 기본적인 오버라이딩 예제**
+```python
+class Animal:
+    def speak(self):
+        return "동물이 소리를 냅니다."
+
+class Dog(Animal):
+    def speak(self):  # 부모의 speak() 메서드를 오버라이딩
+        return "멍멍!"
+
+class Cat(Animal):
+    def speak(self):  # 부모의 speak() 메서드를 오버라이딩
+        return "야옹!"
+
+dog = Dog()
+cat = Cat()
+
+print(dog.speak())  # 멍멍!
+print(cat.speak())  # 야옹!
+```
+
+### **(2) `super()`를 이용한 오버라이딩**
+부모 클래스의 메서드를 호출하고 추가적인 기능을 덧붙이고 싶을 때 `super()`를 사용할 수 있습니다.
+
+```python
+class Animal:
+    def speak(self):
+        return "동물이 소리를 냅니다."
+
+class Dog(Animal):
+    def speak(self):
+        return super().speak() + " 하지만 개는 '멍멍!' 하고 웁니다."
+
+dog = Dog()
+print(dog.speak())  
+# 동물이 소리를 냅니다. 하지만 개는 '멍멍!' 하고 웁니다.
+```
+
+---
+
+## **3. 오버로딩 vs 오버라이딩 정리**
+| 개념 | 오버로딩 (Overloading) | 오버라이딩 (Overriding) |
+|------|----------------------|----------------------|
+| 의미 | 같은 이름의 메서드를 인자의 수나 타입에 따라 다르게 정의하는 것 | 부모 클래스의 메서드를 자식 클래스에서 재정의하는 것 |
+| 지원 여부 | **Python에서는 직접 지원하지 않음** (가변 인수 `*args` 또는 기본값 활용) | **Python에서 직접 지원** |
+| 사용 방식 | 같은 클래스 내에서 메서드 이름을 동일하게 하고 인자의 수나 타입을 다르게 설정 | 자식 클래스에서 부모 클래스의 메서드를 같은 이름으로 다시 정의 |
+| 코드 예시 | `def add(self, a, b=0, c=0):` 또는 `def add(self, *args):` | `def speak(self):` (부모 메서드 재정의) |
+| 대표 예제 | `__init__()`에서 여러 개의 초기화 방식 지원 | `speak()` 메서드를 자식 클래스에서 재정의 |
+
+---
+
+### **결론**
+- **오버로딩(Overloading)**  
+  - Python은 오버로딩을 공식적으로 지원하지 않지만, **기본값 매개변수**와 **가변 인수 (`*args`, `**kwargs`)**를 활용하여 구현 가능하다.
+  
+- **오버라이딩(Overriding)**  
+  - 부모 클래스의 메서드를 자식 클래스에서 **같은 이름으로 재정의**하여 동작을 변경하는 방식이며, **Python에서 공식적으로 지원**된다.
+
+궁금한 점 있으면 더 질문해 줘! 😊
+
+### **클래스 메서드를 정의하는 데코레이터**
+Python에서 클래스 메서드를 정의할 때 사용하는 대표적인 데코레이터는 `@classmethod`와 `@staticmethod`입니다.  
+
+---
+
+## **1. `@classmethod` (클래스 메서드)**
+- 클래스 자체를 첫 번째 인자로 받는 메서드를 정의할 때 사용한다.
+- `cls`를 첫 번째 인자로 받으며, 클래스 변수를 수정하거나 클래스 레벨에서 접근할 때 유용하다.
+
+### **사용 예시**
+```python
+class Dog:
+    species = "Canine"  # 클래스 변수
+
+    def __init__(self, name):
+        self.name = name  # 인스턴스 변수
+
+    @classmethod
+    def change_species(cls, new_species):
+        cls.species = new_species  # 클래스 변수 변경
+
+# 클래스 메서드 호출
+Dog.change_species("Feline")
+print(Dog.species)  # Feline
+```
+💡 **클래스 메서드는 인스턴스가 아닌 클래스 자체에서 호출 가능하다.**
+
+---
+
+## **2. `@staticmethod` (정적 메서드)**
+- 클래스나 인스턴스와 관계없이 독립적으로 실행되는 메서드.
+- 첫 번째 인자로 `self`나 `cls`를 받지 않는다.
+- 일반적인 유틸리티 함수처럼 동작하지만 클래스 내부에서 논리적으로 관련된 기능을 제공할 때 유용하다.
+
+### **사용 예시**
+```python
+class MathUtils:
+    @staticmethod
+    def add(a, b):
+        return a + b
+
+# 정적 메서드는 클래스 또는 인스턴스를 통해 호출 가능
+print(MathUtils.add(5, 10))  # 15
+```
+💡 **정적 메서드는 인스턴스를 만들 필요 없이 바로 호출할 수 있다.**
+
+---
+
+## **3. `@property` (프로퍼티)**
+- 게터(getter) 메서드를 정의할 때 사용된다.
+- **인스턴스 변수를 직접 접근하지 않고, 메서드를 통해 접근하도록 유도**하는 방식.
+- `@property`, `@<property_name>.setter`, `@<property_name>.deleter`를 함께 사용할 수 있다.
+
+### **사용 예시**
+```python
+class Person:
+    def __init__(self, name):
+        self._name = name  # private 변수처럼 취급
+
+    @property
+    def name(self):  # 게터 역할
+        return self._name
+
+    @name.setter
+    def name(self, new_name):  # 세터 역할
+        if isinstance(new_name, str) and new_name:
+            self._name = new_name
+        else:
+            raise ValueError("이름은 비어있을 수 없습니다.")
+
+p = Person("John")
+print(p.name)  # John
+
+p.name = "Alice"  # 세터 사용
+print(p.name)  # Alice
+
+# p.name = ""  # ValueError 발생
+```
+💡 **프로퍼티를 활용하면 인스턴스 변수의 직접적인 접근을 막고, 제어할 수 있다.**
+
+---
+
+## **4. `@staticmethod` vs `@classmethod` 비교**
+| 구분         | `@staticmethod` | `@classmethod` |
+|-------------|---------------|---------------|
+| 첫 번째 인자 | 없음         | `cls` (클래스 자체) |
+| 클래스 변수 접근 | 불가능      | 가능 |
+| 인스턴스 변수 접근 | 불가능 | 불가능 |
+| 호출 방식 | 클래스 또는 인스턴스를 통해 호출 가능 | 클래스 또는 인스턴스를 통해 호출 가능 |
+| 주요 사용 목적 | 독립적인 기능 (유틸리티 메서드) | 클래스 변수 변경 또는 클래스 레벨 동작 수행 |
+
+---
+
+### **결론**
+- `@classmethod` → 클래스 변수를 수정하거나, 클래스 레벨의 동작을 정의할 때 사용.
+- `@staticmethod` → 클래스와 무관한 독립적인 기능을 정의할 때 사용.
+- `@property` → 인스턴스 변수에 대한 접근을 제어하고, 게터/세터 역할을 수행.
+
+필요한 내용 더 궁금하면 질문해 줘! 😊
+
+Yes, both **class methods** and **static methods** can be used to implement the **Factory Pattern** in Python. However, they have key differences that affect how the factory is structured and used.
+
+---
+
+## **🔹 차이점: 클래스 메서드 vs 정적 메서드 팩토리 패턴**
+|  | **클래스 메서드 (`@classmethod`)** | **정적 메서드 (`@staticmethod`)** |
+|---|---------------------------------|--------------------------------|
+| **첫 번째 매개변수** | `cls` (클래스를 첫 번째 인자로 받음) | 첫 번째 인자로 클래스 정보를 받지 않음 |
+| **서브클래싱 영향** | 서브클래스에서 호출하면 `cls`가 해당 서브클래스가 됨 (서브클래스에 맞는 객체 생성 가능) | 서브클래스에서 호출해도 기본 클래스에서 정의된 대로 동작 |
+| **클래스 상태 접근** | 클래스 변수를 읽거나 수정 가능 | 클래스 변수에 접근할 수 없음 |
+| **사용 목적** | 서브클래싱을 고려하는 유연한 팩토리 | 독립적인 유틸리티 팩토리 |
+
+---
+
+## **🔹 예제: 클래스 메서드 기반 팩토리 패턴**
+```python
+class Animal:
+    def __init__(self, name):
+        self.name = name
+
+    @classmethod
+    def create(cls, animal_type):
+        if animal_type == "dog":
+            return cls("Dog")
+        elif animal_type == "cat":
+            return cls("Cat")
+        else:
+            raise ValueError("Unknown animal type")
+
+# 서브클래스
+class Dog(Animal):
+    pass
+
+class Cat(Animal):
+    pass
+
+# 서브클래스에서 사용 가능
+dog = Dog.create("dog")
+print(dog.name)  # Dog (Dog 클래스의 인스턴스)
+print(isinstance(dog, Dog))  # True
+```
+### **📌 특징**
+- `@classmethod`를 사용하여 **서브클래스에서도 재사용 가능**.
+- `cls`를 통해 **현재 호출한 클래스(Dog, Cat 등)에 맞는 객체를 반환**.
+
+---
+
+## **🔹 예제: 정적 메서드 기반 팩토리 패턴**
+```python
+class Animal:
+    def __init__(self, name):
+        self.name = name
+
+    @staticmethod
+    def create(animal_type):
+        if animal_type == "dog":
+            return Animal("Dog")
+        elif animal_type == "cat":
+            return Animal("Cat")
+        else:
+            raise ValueError("Unknown animal type")
+
+dog = Animal.create("dog")
+print(dog.name)  # Dog
+print(isinstance(dog, Animal))  # True
+```
+### **📌 특징**
+- `@staticmethod`을 사용하여 **클래스 정보(`cls`) 없이도 독립적으로 동작**.
+- 항상 `Animal` 클래스의 인스턴스를 반환하며, **서브클래스에서 호출해도 Animal 인스턴스만 생성**.
+
+---
+
+## **🔹 결론: 언제 어떤 것을 사용할까?**
+| **상황** | **사용할 것** |
+|---------|-------------|
+| 팩토리 메서드가 **클래스 계층을 지원해야 할 때** | `@classmethod` |
+| 팩토리 메서드가 **클래스 상태를 참조해야 할 때** | `@classmethod` |
+| 팩토리 메서드가 **독립적인 함수로 동작해야 할 때** | `@staticmethod` |
+| 팩토리 메서드가 **서브클래스에서 다르게 동작할 필요 없을 때** | `@staticmethod` |
+
+**💡 정리:**  
+- **서브클래싱이 필요하면 `@classmethod`**  
+- **독립적인 팩토리 로직이면 `@staticmethod`**  
+
+즉, **유연성과 확장성을 고려한다면 `@classmethod`가 더 적합**한 경우가 많다. 🚀
