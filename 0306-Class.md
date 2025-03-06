@@ -792,4 +792,70 @@ print(dog2.age)   # 5
 - **인스턴스**는 클래스를 기반으로 생성된 **실체 객체**입니다.
 - **인스턴스 변수**는 각 객체마다 독립적으로 값을 가지며, **클래스 변수**는 모든 인스턴스에서 공유됩니다.
 - **인스턴스 메서드**는 객체마다 동작하고, **클래스 메서드**는 클래스 자체를 대상으로 동작합니다.
+맞습니다! 파이썬에서 **getter**는 **프로퍼티** 메서드로 구현되며, 사실 별도로 `getter`라는 명시적인 키워드는 존재하지 않습니다. 대신, `@property` 데코레이터를 사용하여 **읽기** 전용 메서드를 만들 수 있습니다. 이 메서드는 **객체의 속성 값을 가져오는 역할**을 하며, getter처럼 동작합니다.
 
+**getter** 메서드는 보통 `@property` 데코레이터를 통해 속성처럼 보이게 하지만, 사실 메서드로 구현되어 있습니다. **setter**와 마찬가지로, `getter`는 속성 값을 반환하는 데 사용됩니다.
+
+### **getter 예시 (프로퍼티 사용)**
+
+```python
+class Dog:
+    def __init__(self, name, age):
+        self._name = name  # 실제 값을 저장하는 변수
+        self._age = age
+
+    @property
+    def name(self):  # getter
+        return self._name
+
+    @property
+    def age(self):  # getter
+        return self._age
+
+    @age.setter
+    def age(self, new_age):  # setter
+        if new_age < 0:
+            print("Age cannot be negative!")
+        else:
+            self._age = new_age
+
+# 객체 생성
+dog = Dog("Buddy", 3)
+
+# getter를 사용하여 값 가져오기
+print(dog.name)  # Buddy
+print(dog.age)   # 3
+
+# setter를 사용하여 값 변경
+dog.age = 4
+print(dog.age)   # 4
+```
+
+### **프로퍼티를 사용한 getter, setter**
+
+- **`@property`** 데코레이터를 통해 `name`과 `age`는 마치 **인스턴스 변수처럼** 접근할 수 있지만, 실제로는 메서드입니다.
+- **getter**는 값을 **읽을 때** 자동으로 호출되는 메서드입니다.
+- **setter**는 값을 **설정할 때** 자동으로 호출됩니다.
+
+### **간단한 정리**
+
+- **getter**는 값을 반환하는 메서드로, **`@property`**를 통해 구현됩니다.
+- **setter**는 값을 설정하는 메서드로, **`@<property name>.setter`**를 통해 구현됩니다.
+- `getter`와 `setter` 모두 **속성처럼** 동작하지만, 실제로는 메서드로 구현되기 때문에 **더 많은 제어**를 할 수 있습니다.
+
+아래는 **클래스 변수에서 인스턴스화 되는 경우**와 **새로 할당되는 경우**를 변수 타입에 따라 깔끔하게 정리한 표입니다.
+
+| **변수 타입**          | **클래스 변수 동작**                                        | **예시**                                                                                                                                               | **설명**                                                                                                                                                       |
+|--------------------|----------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **가변 객체 (Mutable)**  (예: `list`, `dict`, `set`) | **인스턴스 간 참조 공유**. 수정 시 모든 인스턴스에 영향을 미침.                       | ```python<br>class Dog:<br>    breed = ['Beagle', 'Poodle']<br>dog1 = Dog()<br>dog2 = Dog()<br>dog1.breed.append('Bulldog')<br>print(dog1.breed)<br>print(dog2.breed)``` | `dog1.breed`에 `'Bulldog'` 추가 시 `dog2.breed`도 동일하게 변경됨. **같은 객체를 참조**함. |
+| **불변 객체 (Immutable)** (예: `int`, `str`, `tuple`) | **새로운 값 할당 시 새로운 객체 생성**. 기존 인스턴스는 영향을 받지 않음. | ```python<br>class Counter:<br>    count = 10<br>counter1 = Counter()<br>counter2 = Counter()<br>counter1.count += 1<br>print(counter1.count)<br>print(counter2.count)``` | `counter1.count += 1` 시 `count`는 **새로운 객체**가 되어 `counter2.count`는 여전히 `10`을 유지. |
+| **None (특수값)**      | **불변 객체**처럼 **새로운 값 할당 시 객체 새로 생성**. 기존 인스턴스에는 영향 없음. | ```python<br>class Data:<br>    value = None<br>data1 = Data()<br>data2 = Data()<br>data1.value = 'new'<br>print(data1.value)<br>print(data2.value)``` | `data1.value`를 `'new'`로 할당해도 `data2.value`는 여전히 `None`. **불변 객체**로 다뤄짐. |
+| **클래스 자체**        | **인스턴스가 클래스 변수와 동일한 이름을 사용하면 참조가 분리**됨. | ```python<br>class Animal:<br>    species = "Dog"<br>animal1 = Animal()<br>animal2 = Animal()<br>animal1.species = "Cat"<br>print(animal1.species)<br>print(animal2.species)``` | `animal1.species`가 `'Cat'`으로 변경되지만, `animal2.species`는 여전히 `'Dog'`. 인스턴스 변수처럼 동작함. |
+
+### **핵심 정리:**
+- **가변 객체**는 인스턴스 간 **참조를 공유**하므로 하나에서 변경하면 모두 변경됩니다.
+- **불변 객체**는 값을 변경할 때마다 **새로운 객체**가 생성되어, 다른 인스턴스에는 영향을 미치지 않습니다.
+- **None**도 불변 객체로 다뤄져, 새로운 값 할당 시 기존 값을 변경하지 않습니다.
+- **클래스 변수**가 **인스턴스 변수처럼 동작**할 수 있으므로 주의가 필요합니다.
+
+이렇게 정리하면 각 타입별로 동작 차이를 한눈에 볼 수 있습니다.
