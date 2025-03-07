@@ -669,3 +669,451 @@ OK
 ---
 
 이러한 과정을 통해, `unittest.main()`은 사용자가 명시적으로 `TestCase` 클래스를 지정하지 않아도, 현재 스크립트 내에서 `TestCase`를 상속받은 클래스를 자동으로 찾아 실행할 수 있게 됩니다. 이 과정은 `unittest` 프레임워크의 핵심적인 동작 방식으로, 사용자는 `unittest.main()`만 호출하면 모든 테스트가 자동으로 처리됩니다.
+Python에서 **예외 처리**(Exception Handling)는 프로그램 실행 중 발생할 수 있는 오류를 처리하여 **비정상적인 종료를 방지**하고, **원하는 방식으로 대응**할 수 있도록 합니다.  
+
+---
+
+## 🔹 1. 예외(Exception)란?  
+예외는 프로그램 실행 중 발생하는 **예상치 못한 오류**를 의미합니다.  
+예를 들어, 0으로 나누거나, 존재하지 않는 파일을 열려고 할 때 예외가 발생합니다.
+
+### ❗ 자주 발생하는 예외 유형
+| 예외 | 설명 |
+|------|------|
+| `ZeroDivisionError` | 0으로 나누었을 때 발생 |
+| `IndexError` | 리스트, 튜플 등의 인덱스 범위를 벗어났을 때 발생 |
+| `KeyError` | 딕셔너리에서 존재하지 않는 키를 참조할 때 발생 |
+| `ValueError` | 형변환 등에서 부적절한 값을 사용할 때 발생 |
+| `TypeError` | 연산이나 함수 호출 시 타입이 맞지 않을 때 발생 |
+| `FileNotFoundError` | 존재하지 않는 파일을 열려고 할 때 발생 |
+| `AttributeError` | 존재하지 않는 속성이나 메서드를 호출할 때 발생 |
+
+---
+
+## 🔹 2. 기본 예외 처리 (`try-except` 문)  
+예외 처리는 `try`와 `except` 블록을 사용하여 수행합니다.  
+
+```python
+try:
+    x = 10 / 0  # ZeroDivisionError 발생
+except ZeroDivisionError:
+    print("0으로 나눌 수 없습니다.")
+```
+**출력:**  
+```
+0으로 나눌 수 없습니다.
+```
+
+---
+
+## 🔹 3. 여러 개의 예외 처리 (`except` 여러 개 사용)  
+```python
+try:
+    lst = [1, 2, 3]
+    print(lst[5])  # IndexError 발생
+except ZeroDivisionError:
+    print("0으로 나눌 수 없습니다.")
+except IndexError:
+    print("리스트 인덱스 범위를 벗어났습니다.")
+```
+**출력:**  
+```
+리스트 인덱스 범위를 벗어났습니다.
+```
+
+---
+
+## 🔹 4. 모든 예외 처리 (`Exception`)  
+모든 예외를 한꺼번에 처리하려면 `Exception`을 사용합니다.  
+```python
+try:
+    x = int("Hello")  # ValueError 발생
+except Exception as e:
+    print(f"예외 발생: {e}")
+```
+**출력:**  
+```
+예외 발생: invalid literal for int() with base 10: 'Hello'
+```
+✔ **모든 예외를 처리하는 것은 권장되지 않으며, 특정 예외를 처리하는 것이 바람직합니다.**
+
+---
+
+## 🔹 5. `else`와 `finally` 사용  
+- `else`: 예외가 발생하지 않았을 때 실행됨  
+- `finally`: 예외 발생 여부와 관계없이 **항상 실행됨** (리소스 해제 등에서 사용)
+
+```python
+try:
+    num = int(input("숫자를 입력하세요: "))  # 정상 입력 시 실행됨
+except ValueError:
+    print("잘못된 입력입니다! 숫자를 입력하세요.")
+else:
+    print(f"입력한 숫자는 {num}입니다.")
+finally:
+    print("프로그램 종료")  # 항상 실행됨
+```
+
+✔ **실행 흐름**  
+- 숫자를 입력하면 `else` 블록 실행  
+- 숫자가 아닌 값을 입력하면 `except` 블록 실행  
+- `finally`는 **무조건 실행됨**
+
+---
+
+## 🔹 6. 사용자 정의 예외 (`raise`)  
+`raise` 키워드를 사용하면 직접 예외를 발생시킬 수 있습니다.  
+```python
+def check_age(age):
+    if age < 18:
+        raise ValueError("18세 이상만 가능합니다.")
+    return "입장 가능합니다."
+
+try:
+    print(check_age(15))
+except ValueError as e:
+    print(f"오류 발생: {e}")
+```
+**출력:**  
+```
+오류 발생: 18세 이상만 가능합니다.
+```
+
+---
+
+## 🔹 7. 사용자 정의 예외 클래스 만들기  
+기존 예외 대신 **사용자 정의 예외**를 만들려면 `Exception`을 상속받아 사용합니다.  
+```python
+class NegativeNumberError(Exception):
+    def __init__(self, value):
+        super().__init__(f"음수는 입력할 수 없습니다: {value}")
+
+def check_positive(num):
+    if num < 0:
+        raise NegativeNumberError(num)
+    return num
+
+try:
+    print(check_positive(-5))
+except NegativeNumberError as e:
+    print(f"예외 발생: {e}")
+```
+**출력:**  
+```
+예외 발생: 음수는 입력할 수 없습니다: -5
+```
+
+---
+
+## 🔹 8. `with`문과 예외 처리 (파일 처리 예제)  
+파일 입출력 시에는 `finally` 없이도 자동으로 자원을 정리할 수 있도록 `with`문을 사용합니다.  
+```python
+try:
+    with open("파일.txt", "r") as file:
+        content = file.read()
+        print(content)
+except FileNotFoundError:
+    print("파일을 찾을 수 없습니다.")
+```
+✔ **`with`를 사용하면 파일을 자동으로 닫아줍니다.**
+
+---
+
+## 🔹 9. 예외 처리 Best Practices  
+✅ **특정 예외를 명확히 처리하기** (모든 예외를 `Exception`으로 처리하지 않기)  
+✅ **가능한 한 자세한 예외 메시지 출력하기**  
+✅ **파일이나 네트워크 리소스는 `with`문을 사용하여 관리하기**  
+✅ **사용자 정의 예외를 만들어 의미 있는 예외를 발생시키기**  
+
+---
+
+## 🔹 10. 예외 처리를 활용한 안전한 코드 예제  
+```python
+def divide(a, b):
+    try:
+        return a / b
+    except ZeroDivisionError:
+        return "0으로 나눌 수 없습니다."
+    except TypeError:
+        return "숫자만 입력하세요."
+
+print(divide(10, 2))  # 정상 실행
+print(divide(10, 0))  # 0으로 나누는 예외 처리
+print(divide(10, "a"))  # 타입 오류 예외 처리
+```
+**출력:**  
+```
+5.0
+0으로 나눌 수 없습니다.
+숫자만 입력하세요.
+```
+
+---
+
+## 🔹 결론  
+Python의 예외 처리는 **안전한 프로그램을 만들기 위한 필수 요소**입니다.  
+예외 처리를 적절히 활용하면 **예기치 않은 오류로 인한 프로그램 중단을 방지**할 수 있습니다. 🚀
+
+리턴은 문장이 다 실행되고 나서 return
+
+### **📌 `__init__.py`의 활용과 역할**  
+
+`__init__.py`는 **Python 패키지의 일부임을 나타내는 파일**이며, 다양한 용도로 활용될 수 있어. 기본적인 역할과 활용법을 정리해줄게.  
+
+---
+
+## **1️⃣ `__init__.py`의 기본 역할**
+1. **패키지 인식 역할**  
+   - `__init__.py`가 존재하는 디렉터리는 **Python 패키지로 간주됨.**  
+   - 예전 버전(Python 3.2 이전)에서는 이 파일이 반드시 필요했지만, 최신 버전에서는 없어도 패키지로 인식됨. 하지만 여전히 활용도가 높음.
+
+2. **패키지 초기화 코드 실행**  
+   - 패키지가 임포트될 때, `__init__.py` 내부 코드가 실행됨.
+   - 전역 변수, 로깅, 설정값 등을 정의하는 데 사용 가능.
+
+3. **패키지 내에서 특정 모듈을 자동으로 임포트 가능**  
+   - `__init__.py`에서 특정 모듈을 미리 로드하여, 패키지 사용자가 더 쉽게 접근하도록 할 수 있음.
+
+---
+
+## **2️⃣ `__init__.py` 활용 예제**
+### **📌 (1) 기본적인 패키지 구조**
+```bash
+my_package/
+│── __init__.py
+│── module1.py
+│── module2.py
+```
+
+### **📌 (2) `__init__.py` 내부에서 모듈을 미리 로드**
+#### **파일: `my_package/__init__.py`**
+```python
+print("패키지 my_package가 로드되었습니다.")
+
+# 특정 모듈을 미리 임포트
+from .module1 import foo
+from .module2 import bar
+```
+
+#### **파일: `my_package/module1.py`**
+```python
+def foo():
+    return "Hello from module1"
+```
+
+#### **파일: `my_package/module2.py`**
+```python
+def bar():
+    return "Hello from module2"
+```
+
+### **📌 (3) 패키지를 임포트하면 자동 실행**
+```python
+import my_package
+
+print(my_package.foo())  # "Hello from module1"
+print(my_package.bar())  # "Hello from module2"
+```
+✅ `my_package`를 임포트할 때, `__init__.py` 내부의 코드가 실행되며, `module1`과 `module2`의 함수를 직접 호출할 수 있게 됨.
+
+---
+
+## **3️⃣ 고급 활용법**
+### **📌 (1) 패키지 내에서 전역 설정 관리**
+- `__init__.py`를 활용하여 패키지의 **전역 변수**나 **설정값**을 관리할 수 있음.
+
+#### **예제: `config.py`를 `__init__.py`에서 로드**
+```python
+# __init__.py
+from .config import settings
+```
+
+```python
+# config.py
+settings = {
+    "db_host": "localhost",
+    "db_port": 3306
+}
+```
+
+#### **사용 예제**
+```python
+import my_package
+
+print(my_package.settings["db_host"])  # "localhost"
+```
+
+---
+
+### **📌 (2) 동적 임포트 활용 (`__all__` 설정)**
+- `__init__.py`에서 `__all__`을 설정하면, `from my_package import *` 할 때 불러올 모듈을 제한할 수 있음.
+
+```python
+# __init__.py
+__all__ = ["module1"]
+```
+
+```python
+from my_package import *
+
+print(module1.foo())  # 정상 작동
+print(module2.bar())  # ImportError 발생 (제한됨)
+```
+
+---
+
+### **📌 (3) `__path__`를 이용한 동적 패키지 확장**
+- `__path__`를 조작하면 런타임에 동적으로 패키지를 확장할 수도 있음.
+
+```python
+# __init__.py
+import os
+import sys
+
+# 현재 패키지 경로에 특정 디렉토리를 추가
+sys.path.append(os.path.join(os.path.dirname(__file__), "extra_modules"))
+```
+
+---
+
+## **4️⃣ 결론**
+✅ **Python 패키지를 효과적으로 관리하고 초기화하는 데 `__init__.py`를 활용할 수 있음.**  
+✅ **모듈을 자동으로 로드하거나, 전역 설정을 저장하거나, 동적 임포트 등을 할 때 유용함.**  
+✅ **최근 버전(Python 3.3+)에서는 필수는 아니지만, 여전히 패키지 설계에서 중요한 역할을 함.**  
+
+Google Colab에서 세션을 다시 시작하면, Python 인터프리터가 완전히 초기화되면서 모든 변수가 사라지고, 새롭게 시작됨. 이때 `__init__.py`가 다시 실행되지만, **이미 임포트된 모듈은 캐싱되어 있어서 이후 다시 실행되지 않는 것**이 원인임.  
+
+---
+
+## **📌 원인 분석**
+1. **Colab 세션을 다시 시작하면 인터프리터가 재부팅됨**
+   - 모든 임포트된 모듈, 변수, 객체가 사라짐.
+   - 따라서, 패키지를 처음 임포트하면 `__init__.py`가 실행됨.
+
+2. **두 번째 실행부터는 `sys.modules` 캐싱 때문에 실행되지 않음**
+   - Python은 한 번 임포트한 모듈을 `sys.modules`에 저장하고, 같은 모듈을 다시 임포트할 때 `__init__.py`를 다시 실행하지 않음.
+   - 이는 성능 최적화를 위해 Python이 제공하는 기본 동작임.
+
+---
+
+## **📌 해결 방법**
+### **1️⃣ `importlib.reload()` 사용**
+한 번 임포트된 모듈을 다시 로드하고 싶다면 `importlib.reload()`를 사용하면 됨.
+
+```python
+import importlib
+import my_package  # 첫 번째 실행: __init__.py 실행됨
+
+importlib.reload(my_package)  # 다시 로드하면 __init__.py 다시 실행됨
+```
+
+---
+
+### **2️⃣ `sys.modules`에서 제거 후 재임포트**
+Python의 `sys.modules`에서 패키지를 제거하면 다시 임포트할 때 `__init__.py`가 실행됨.
+
+```python
+import sys
+import my_package
+
+del sys.modules["my_package"]  # 캐시에서 제거
+import my_package  # 다시 실행됨
+```
+
+---
+
+### **3️⃣ `runpy` 모듈 사용**
+`runpy` 모듈을 사용하여 패키지를 직접 실행할 수도 있음.
+
+```python
+import runpy
+runpy.run_module("my_package")
+```
+
+---
+
+## **📌 결론**
+✅ **Colab에서 세션이 재시작되면, `__init__.py`는 처음에는 실행되지만 이후 다시 실행되지 않음.**  
+✅ **이는 Python이 `sys.modules`에 임포트된 모듈을 캐싱하기 때문.**  
+✅ **`importlib.reload()`, `del sys.modules`, `runpy.run_module()` 등을 사용하면 다시 실행 가능.**
+
+### **Streamlit이란?**  
+**Streamlit**은 **Python 기반의 데이터 애플리케이션 및 대시보드를 쉽게 만들 수 있는 라이브러리**임.  
+주로 **데이터 시각화, 머신러닝 모델 공유, 웹 애플리케이션 개발**에 사용됨.  
+
+---
+
+## **📌 Streamlit 주요 특징**
+✅ **간단한 코드**  
+- Flask, Django와 달리 HTML, CSS 없이 **Python 코드만으로 웹 앱 개발 가능**  
+- `st.write()`, `st.button()`, `st.slider()` 등의 API 제공  
+
+✅ **빠른 실행**  
+- 코드 변경 시 자동으로 **핫 리로드**  
+- 빠르게 **프로토타이핑(시제품 개발)** 가능  
+
+✅ **데이터 시각화 지원**  
+- `Matplotlib`, `Seaborn`, `Plotly`, `Altair` 등과 통합  
+- Pandas DataFrame도 바로 렌더링 가능  
+
+✅ **인터랙티브 UI 지원**  
+- `st.slider()`, `st.button()`, `st.selectbox()` 등 UI 요소 제공  
+- 사용자 입력을 실시간으로 반영 가능  
+
+✅ **클라우드 배포 가능**  
+- **Streamlit Community Cloud**를 통해 손쉽게 배포 가능  
+
+---
+
+## **📌 Streamlit 설치 방법**
+```bash
+pip install streamlit
+```
+
+---
+
+## **📌 Streamlit 기본 예제**
+다음은 간단한 Streamlit 웹앱 코드임.  
+
+### **🔹 `app.py`**
+```python
+import streamlit as st
+
+st.title("📊 Streamlit 예제")
+st.write("안녕하세요! 이것은 Streamlit을 활용한 간단한 웹 애플리케이션입니다.")
+
+# 사용자 입력 받기
+name = st.text_input("이름을 입력하세요:")
+if name:
+    st.write(f"환영합니다, {name}님!")
+
+# 슬라이더로 숫자 선택
+num = st.slider("숫자를 선택하세요", 0, 100, 50)
+st.write(f"선택한 숫자: {num}")
+
+# 버튼 추가
+if st.button("클릭하세요"):
+    st.write("버튼이 클릭되었습니다!")
+```
+
+---
+
+## **📌 실행 방법**
+Streamlit은 명령어 한 줄로 실행 가능함.
+```bash
+streamlit run app.py
+```
+이후, **로컬 브라우저(`localhost:8501`)**에서 실행됨.
+
+---
+
+## **📌 결론**
+✅ **Streamlit은 Python만으로 데이터 애플리케이션을 쉽게 개발할 수 있는 라이브러리**  
+✅ **웹 개발 지식 없이도 대시보드, 머신러닝 모델을 공유할 수 있음**  
+✅ **빠른 프로토타이핑과 배포가 가능하여 데이터 과학자, 연구원들에게 유용함**
+
+ngrok은 로컬 서버를 인터넷 상에서 접근할 수 있게 만들어주는 서비스입니다. 개발 중인 웹 애플리케이션이나 API를 로컬 환경에서 테스트할 때, 외부에서 접근할 수 있도록 하는 터널링 도구입니다.
+
+ngrok을 사용하면 로컬 머신에서 실행 중인 서버에 대한 공개 URL을 생성할 수 있어서, 클라우드나 외부 서버를 설정하지 않고도 외부에서 로컬 서버를 테스트하거나, 다른 사람들이 접근할 수 있도록 할 수 있습니다. 특히 웹훅(Webhook) 테스트나, 개발 중인 앱을 다른 사람과 공유하고자 할 때 유용합니다.
+
+간단히 말하면, ngrok은 로컬 서버에 대한 "공개 주소"를 생성해주는 도구입니다.
