@@ -1050,7 +1050,166 @@ SELECT name, department FROM employees;
 
 이제 `EXPLAIN`과 쿼리 최적화 방법에 대해 좀 더 이해할 수 있게 되었을 것입니다. 실습을 통해 직접 쿼리를 작성하고 성능을 분석해보는 것도 좋은 학습 방법입니다!
 
+알겠습니다! MySQL 기준으로 **SQL 성능 최적화 및 인덱스**에 대한 예시를 자세히 설명하겠습니다.
 
+### 1. **SQL 성능 최적화 예시**
+
+#### 1.1 **불필요한 데이터 검색 줄이기**
+
+예를 들어, `employees` 테이블에서 직원의 이름과 부서만 필요할 때 전체 테이블을 SELECT하는 것은 비효율적입니다. 필요한 컬럼만 선택하는 것이 좋습니다.
+
+```sql
+-- 비효율적 예시
+SELECT * FROM employees;
+
+-- 효율적 예시
+SELECT name, department FROM employees;
+```
+`SELECT *`를 사용하면 불필요한 데이터를 모두 가져오기 때문에 성능이 떨어집니다. 따라서 필요한 컬럼만 선택하여 성능을 최적화해야 합니다.
+
+#### 1.2 **WHERE 절 최적화**
+
+`WHERE` 절에서 조건을 최적화해야 합니다. 예를 들어, `LIKE` 연산자나 `OR` 조건은 성능을 저하시킬 수 있으므로, 가능한 효율적인 조건으로 변경해야 합니다.
+
+```sql
+-- 비효율적 예시
+SELECT * FROM employees WHERE name LIKE '%John%';
+
+-- 효율적 예시
+SELECT * FROM employees WHERE name = 'John';
+```
+
+`LIKE '%John%'`은 인덱스를 사용할 수 없기 때문에 성능에 큰 영향을 미칩니다. 대신 `LIKE` 조건을 `=`와 같은 정확한 비교로 변경하는 것이 성능을 개선할 수 있습니다.
+
+#### 1.3 **조인 최적화**
+
+조인 쿼리에서 불필요한 테이블을 조인하면 성능이 떨어질 수 있습니다. 필요한 테이블만 조인하고, `JOIN` 조건을 명확히 해야 합니다.
+
+```sql
+-- 비효율적 예시
+SELECT * 
+FROM employees e 
+JOIN departments d ON e.department_id = d.department_id 
+JOIN salaries s ON e.employee_id = s.employee_id;
+
+-- 효율적 예시
+SELECT e.name, d.department_name 
+FROM employees e 
+JOIN departments d ON e.department_id = d.department_id;
+```
+위 예시에서 `salaries` 테이블은 불필요하게 조인되고 있습니다. 실제로 필요한 데이터만 가져오는 쿼리로 최적화해야 합니다.
+
+### 2. **인덱스 (Index)**
+
+#### 2.1 **단일 컬럼 인덱스 예시**
+
+단일 컬럼 인덱스는 특정 컬럼에 대해 검색 성능을 향상시킵니다. 예를 들어, `employees` 테이블에서 `name` 컬럼에 대해 인덱스를 추가하려면 다음과 같이 할 수 있습니다.
+
+```sql
+-- 단일 컬럼 인덱스 생성
+CREATE INDEX idx_name ON employees(name);
+```
+
+이 인덱스를 생성하면 `name` 컬럼을 기준으로 검색할 때 성능이 크게 향상됩니다.
+
+```sql
+-- 인덱스를 활용한 검색
+SELECT * FROM employees WHERE name = 'John';
+```
+
+이 쿼리는 `name` 컬럼에 인덱스가 있을 경우 더 빠르게 실행됩니다.
+
+#### 2.2 **복합 인덱스 예시**
+
+복합 인덱스는 여러 컬럼을 조합하여 인덱스를 생성하는 방식입니다. 예를 들어, `employees` 테이블에서 `name`과 `department_id` 컬럼에 대해 복합 인덱스를 생성하려면 다음과 같이 할 수 있습니다.
+
+```sql
+-- 복합 인덱스 생성
+CREATE INDEX idx_name_department ON employees(name, department_id);
+```
+
+이 복합 인덱스를 사용하면 `name`과 `department_id` 컬럼을 동시에 조건으로 사용하는 쿼리에서 성능이 향상됩니다.
+
+```sql
+-- 인덱스를 활용한 복합 조건 검색
+SELECT * FROM employees WHERE name = 'John' AND department_id = 3;
+```
+
+복합 인덱스는 여러 컬럼을 동시에 사용할 때 성능을 최적화할 수 있습니다.
+
+#### 2.3 **유니크 인덱스 예시**
+
+유니크 인덱스는 컬럼의 값이 고유해야 한다는 제약을 두는 인덱스입니다. 예를 들어, `email` 컬럼에 대해 유니크 인덱스를 추가하려면 다음과 같이 할 수 있습니다.
+
+```sql
+-- 유니크 인덱스 생성
+CREATE UNIQUE INDEX idx_email ON employees(email);
+```
+
+이 인덱스를 생성하면 중복된 이메일 값이 삽입될 수 없게 됩니다.
+
+```sql
+-- 유니크 인덱스를 활용한 중복 값 방지
+INSERT INTO employees (name, email) VALUES ('John', 'john@example.com');  -- 성공
+INSERT INTO employees (name, email) VALUES ('Jane', 'john@example.com');  -- 실패 (중복 이메일)
+```
+
+#### 2.4 **Full-Text 인덱스 예시**
+
+Full-Text 인덱스는 텍스트 기반의 컬럼에서 빠른 검색을 위해 사용됩니다. 예를 들어, `description` 컬럼에 대해 Full-Text 인덱스를 추가하려면 다음과 같이 할 수 있습니다.
+
+```sql
+-- Full-Text 인덱스 생성
+CREATE FULLTEXT INDEX idx_description ON employees(description);
+```
+
+이 Full-Text 인덱스를 사용하면 텍스트 검색에서 성능이 크게 향상됩니다.
+
+```sql
+-- Full-Text 검색
+SELECT * FROM employees WHERE MATCH(description) AGAINST('software development');
+```
+
+위 쿼리는 `description` 컬럼에서 "software"와 "development"를 포함하는 레코드를 빠르게 찾을 수 있습니다.
+
+### 3. **EXPLAIN을 사용한 성능 분석**
+
+`EXPLAIN` 명령어는 MySQL 쿼리의 실행 계획을 확인하여 성능을 분석할 수 있는 유용한 도구입니다.
+
+```sql
+EXPLAIN SELECT * FROM employees WHERE name = 'John';
+```
+
+이 명령어는 MySQL이 쿼리를 실행하기 위해 사용하는 실행 계획을 출력합니다. `EXPLAIN`을 사용하여 쿼리의 성능 병목을 파악하고 인덱스 활용 여부, 테이블 접근 방식 등을 분석할 수 있습니다.
+
+#### EXPLAIN 결과 예시:
+```sql
+EXPLAIN SELECT * FROM employees WHERE name = 'John';
+```
+
+출력 예시:
+```
++----+-------------+-----------+-------+---------------+---------+---------+-------+------+-------------+
+| id | select_type | table     | type  | possible_keys | key     | key_len | ref   | rows | Extra       |
++----+-------------+-----------+-------+---------------+---------+---------+-------+------+-------------+
+|  1 | SIMPLE      | employees | ref   | idx_name      | idx_name | 1022    | const |    5 | Using where |
++----+-------------+-----------+-------+---------------+---------+---------+-------+------+-------------+
+```
+
+- `key`: 사용된 인덱스를 나타냅니다. 예시에서는 `idx_name` 인덱스가 사용되었습니다.
+- `rows`: 쿼리가 스캔한 행 수를 나타냅니다. 이 값이 적을수록 성능이 좋습니다.
+- `Extra`: 추가적인 쿼리 실행 정보를 제공합니다. "Using where"는 WHERE 절에서 추가적인 필터링을 했음을 의미합니다.
+
+### 4. **인덱스 관련 고려사항**
+
+- **인덱스가 많으면 성능이 떨어질 수 있습니다**. 인덱스는 읽기 성능을 향상시킬 수 있지만, 쓰기 작업에서는 성능 저하를 일으킬 수 있습니다. 따라서 자주 업데이트되지 않는 컬럼에만 인덱스를 생성하는 것이 좋습니다.
+- **인덱스를 사용할 때는 인덱스가 적절하게 설정되었는지 확인해야 합니다**. 모든 쿼리가 인덱스를 사용하지는 않기 때문에 `EXPLAIN`을 활용하여 인덱스 사용 여부를 분석해야 합니다.
+
+### 결론
+
+SQL 성능 최적화와 인덱스 활용은 데이터베이스 성능을 높이는 중요한 부분입니다. 각 상황에 맞게 적절한 인덱스를 생성하고, 쿼리 최적화를 통해 성능을 개선할 수 있습니다. `EXPLAIN` 명령어를 활용하여 쿼리 성능을 분석하는 것도 중요한 방법입니다.
+
+다음 학습 항목을 원하시면 말씀해 주세요!
 
 
 
